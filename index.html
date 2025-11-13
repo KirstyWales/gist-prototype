@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Gist (Working Title)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* ---------- Global ---------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f5f5f5;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,215,0,0.15) 0, transparent 40%),
+        radial-gradient(circle at 80% 10%, rgba(255,69,0,0.18) 0, transparent 45%),
+        radial-gradient(circle at 70% 80%, rgba(186,85,211,0.2) 0, transparent 40%),
+        #05000a;
+    }
+
+    a {
+      color: #ffcc66;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* ---------- Layout ---------- */
+    .page-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 3rem;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 1rem;
+    }
+
+    .site-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .site-subtitle {
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    .top-nav {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .top-nav button {
+      font-size: 0.85rem;
+    }
+
+    /* ---------- Gist Card ---------- */
+    .gist-card {
+      background: rgba(10, 5, 20, 0.9);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .gist-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .gist-meta {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-bottom: 1rem;
+    }
+
+    .gist-body {
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      white-space: pre-line; /* preserves line breaks */
+    }
+
+    /* ---------- Nav Buttons ---------- */
+    .gist-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: rgba(40, 20, 70, 0.9);
+      color: #f5f5f5;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.1s;
+    }
+
+    button span.icon {
+      font-size: 0.9em;
+    }
+
+    button:hover {
+      background: rgba(60, 30, 100, 0.95);
+      box-shadow: 0 0 10px rgba(255, 204, 102, 0.4);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    footer {
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      opacity: 0.6;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .gist-nav {
+        flex-direction: column;
+      }
+      header {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header>
+      <div class="site-title">The Gist</div>
+      <div class="site-subtitle">Simple infographics for complicated things.</div>
+      <div class="top-nav">
+        <button id="btn-latest-top">Latest</button>
+        <button id="btn-random-top">Random</button>
+        <button id="btn-home-top">First</button>
+      </div>
+    </header>
+
+    <main>
+      <article class="gist-card">
+        <h1 class="gist-title" id="gist-title">Loading…</h1>
+        <div class="gist-meta" id="gist-meta"></div>
+        <div class="gist-body" id="gist-body">
+          <!-- Content will be injected by JS -->
+        </div>
+
+        <nav class="gist-nav">
+          <button id="btn-prev">
+            <span class="icon">←</span>
+            Previous
+          </button>
+          <div style="display:flex; gap:0.5rem;">
+            <button id="btn-latest">Latest</button>
+            <button id="btn-random">Random</button>
+          </div>
+          <button id="btn-next">
+            Next
+            <span class="icon">→</span>
+          </button>
+        </nav>
+      </article>
+    </main>
+
+    <footer>
+      A KirstyWales brain project. Name pending. ✨
+    </footer>
+  </div>
+
+  <script>
+    // --------- Data: your gists go here ---------
+    // Chronological order: oldest first, newest last
+    const gists = [
+  {
+    id: 1,
+    slug: "placeholder-1",
+    title: "Placeholder Gist #1",
+    date: "2025-01-01",
+    summary: "Lorem ipsum summary text goes here.",
+    body: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+Sed non risus. Suspendisse lectus tortor, dignissim sit amet.`,
+  },
+  {
+    id: 2,
+    slug: "placeholder-2",
+    title: "Placeholder Gist #2",
+    date: "2025-01-02",
+    summary: "Another lorem ipsum summary.",
+    body: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+Maecenas fermentum, sem in pharetra gravida, metus arcu.`,
+  },
+];
+
+      // Add more gists here as you make them
+   
+
+    // --------- Helper functions ---------
+    function getGistIndexFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const id = parseInt(params.get("id"), 10);
+      if (!id) return null;
+      const idx = gists.findIndex(g => g.id === id);
+      return idx >= 0 ? idx : null;
+    }
+
+    function setUrlToGist(gist) {
+      const url = new URL(window.location);
+      url.searchParams.set("id", gist.id);
+      window.history.replaceState({}, "", url);
+    }
+
+    function renderGist(index) {
+      const gist = gists[index];
+      if (!gist) return;
+
+      // Update content
+      document.getElementById("gist-title").textContent = gist.title;
+      const metaPieces = [];
+      if (gist.date) metaPieces.push(new Date(gist.date).toLocaleDateString());
+      if (gist.summary) metaPieces.push(gist.summary);
+      document.getElementById("gist-meta").textContent = metaPieces.join(" • ");
+      document.getElementById("gist-body").textContent = gist.body;
+
+      // Update URL
+      setUrlToGist(gist);
+
+      // Update nav buttons
+      const btnPrev = document.getElementById("btn-prev");
+      const btnNext = document.getElementById("btn-next");
+
+      btnPrev.disabled = index === 0;
+      btnNext.disabled = index === gists.length - 1;
+
+      btnPrev.onclick = () => {
+        if (index > 0) renderGist(index - 1);
+      };
+
+      btnNext.onclick = () => {
+        if (index < gists.length - 1) renderGist(index + 1);
+      };
+
+      // Latest + random
+      const latestIndex = gists.length - 1;
+      document.getElementById("btn-latest").onclick =
+      document.getElementById("btn-latest-top").onclick = () => {
+        renderGist(latestIndex);
+      };
+
+      const randomHandler = () => {
+        if (gists.length <= 1) return;
+        let r;
+        do {
+          r = Math.floor(Math.random() * gists.length);
+        } while (r === index && gists.length > 1);
+        renderGist(r);
+      };
+
+      document.getElementById("btn-random").onclick =
+      document.getElementById("btn-random-top").onclick = randomHandler;
+
+      // "Home" = first gist
+      document.getElementById("btn-home-top").onclick = () => {
+        renderGist(0);
+      };
+    }
+
+    // --------- Initial load ---------
+    (function init() {
+      if (!gists.length) return;
+      const urlIndex = getGistIndexFromUrl();
+      const startIndex = urlIndex !== null ? urlIndex : gists.length - 1; // default to latest
+      renderGist(startIndex);
+    })();
+  </script>
+</body>
+</html>
